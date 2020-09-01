@@ -7,12 +7,19 @@
 /*  ================== */
 
 /** 1) Install & Set up mongoose */
-
 // Add mongodb and mongoose to the project's package.json. Then require 
 // mongoose. Store your Mongo Atlas database URI in the private .env file 
 // as MONGO_URI. Connect to the database using the following syntax:
 //
-// mongoose.connect(<Your URI>, { useNewUrlParser: true, useUnifiedTopology: true }); 
+// mongoose.connect(<Your URI>, { useNewUrlParser: true, useUnifiedTopology: true });
+var mongoose = require('mongoose');
+const { Schema } = require('mongoose');
+require('dotenv').config();
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true, 
+  useUnifiedTopology: true
+});
 
 
 
@@ -41,7 +48,16 @@
 
 // <Your code here >
 
-var Person /* = <Your Model> */
+const personSchema = new Schema({
+  name: {
+    type : String,
+    required : true
+  },
+  age: Number,
+  favoriteFoods : [String]
+});
+
+const Person = mongoose.model("Person", personSchema);
 
 // **Note**: Glitch is a real server, and in real servers interactions with
 // the db are placed in handler functions, to be called when some event happens
@@ -79,9 +95,21 @@ var Person /* = <Your Model> */
 // });
 
 var createAndSavePerson = function(done) {
-  
-  done(null /*, data*/);
-
+  var parv = new Person({
+    name: "Parv Kapadia",
+    age: 23,
+    favoriteFood: [
+      "Pizza",
+      "Burger",
+      "Pasta"
+    ]
+  });
+  parv.save((err, data) => {
+    if (err) {
+      return console.error(err);
+    }
+    done(null , data);
+  });
 };
 
 /** 4) Create many People with `Model.create()` */
@@ -93,10 +121,19 @@ var createAndSavePerson = function(done) {
 // Create many people using `Model.create()`, using the function argument
 // 'arrayOfPeople'.
 
+var arrayOfPeople = [
+  {name: "Frankie", age: 74, favoriteFoods: ["Del Taco"]},
+  {name: "Sol", age: 76, favoriteFoods: ["roast chicken"]},
+  {name: "Robert", age: 78, favoriteFoods: ["wine"]}
+];
+
 var createManyPeople = function(arrayOfPeople, done) {
-    
-    done(null/*, data*/);
-    
+    Person.create(arrayOfPeople, (err, persons) => {
+      if (err) {
+        return console.error(err);
+      }
+      done(null, persons);
+    });
 };
 
 /** # C[R]UD part II - READ #
@@ -111,9 +148,14 @@ var createManyPeople = function(arrayOfPeople, done) {
 // Use the function argument `personName` as search key.
 
 var findPeopleByName = function(personName, done) {
-  
-  done(null/*, data*/);
-
+  Person.find({
+    name: personName
+  }, (err, person) => {
+    if (err) {
+      return console.error(err);
+    }
+    done(null, person);
+  });
 };
 
 /** 6) Use `Model.findOne()` */
