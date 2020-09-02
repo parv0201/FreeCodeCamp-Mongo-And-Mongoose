@@ -98,7 +98,7 @@ var createAndSavePerson = function(done) {
   var parv = new Person({
     name: "Parv Kapadia",
     age: 23,
-    favoriteFood: [
+    favoriteFoods: [
       "Pizza",
       "Burger",
       "Pasta"
@@ -168,9 +168,14 @@ var findPeopleByName = function(personName, done) {
 // argument `food` as search key
 
 var findOneByFood = function(food, done) {
-
-  done(null/*, data*/);
-  
+  Person.findOne({
+    favoriteFoods: food
+  }, (err, person) => {
+    if (err) {
+      return console.error(err);
+    }
+    done(null, person);
+  });
 };
 
 /** 7) Use `Model.findById()` */
